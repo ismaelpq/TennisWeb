@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>HTML</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--<link rel="stylesheet" href="estilo.css"> DE MOMENTO NO USO ESTILOS CSS-->
+</head>
+
+<body>
+    <p>Bienvenido a mi pagina web de tenis v.1.1</p>
+    <p> Que eres?</p>
+    <a href="{% url 'homeDocente' %}">
+        <button type="button">Docente</button>
+    </a>
+
+    <a href="{% url 'homeAlumno' %}">
+        <button type="button">Alumno</button>
+    </a>
+
+    <a href="{% url 'homeClubVirtual' %}">
+        <button type="button">Club Virtual</button>
+    </a>
+
+</body>
+</html>
+
