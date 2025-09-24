@@ -1,4 +1,57 @@
 {% extends "docente/plantillabase.html" %}
 
-
 {% block headline %} Ejercicios {% endblock %}
+
+{% block content %}
+
+<!-- 🔎 Formulario de búsqueda -->
+<form method="get" action="{% url 'ejercicios' %}" class="mb-3">
+    <input type="text" name="q" class="form-control" 
+           placeholder="Buscar ejercicio..." 
+           value="{{ request.GET.q }}">
+    <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+</form>
+
+<!-- 📋 Lista de ejercicios -->
+<ul class="list-group">
+    {% for ejercicio in ejercicios %}
+    <li class="list-group-item">
+        <h5>{{ ejercicio.nombre }}</h5>
+        <p>
+            <b>Tema:</b> {{ ejercicio.tema }} |
+            <b>Subtema:</b> {{ ejercicio.subtema1 }} / {{ ejercicio.subtema2 }}
+        </p>
+        <p>
+            <b>Momento:</b> {{ ejercicio.momento }} |
+            <b>Nivel:</b> {{ ejercicio.nivel }} |
+            <b>Alumnos:</b> {{ ejercicio.num_alumnos }}
+        </p>
+        <p>
+            <b>Duración:</b> {{ ejercicio.duracion }} min |
+            
+            <!-- 🔹 Dificultad interactiva -->
+            <b>Dificultad:</b>
+            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" 
+                    title="{{ ejercicio.dificultad_minus }}">
+                -
+            </button>
+            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="top" 
+                    title="{{ ejercicio.dificultad_plus }}">
+                +
+            </button>
+        </p>
+        <p>{{ ejercicio.descripcion }}</p>
+
+        {% if ejercicio.imagen %}
+            <img src="{{ ejercicio.imagen.url }}" alt="imagen ejercicio" style="max-width:200px;">
+        {% endif %}
+
+        {% if ejercicio.link %}
+            <a href="{{ ejercicio.link }}" target="_blank">Ver más</a>
+        {% endif %}
+    </li>
+    {% endfor %}
+
+</ul>
+
+{% endblock %}
