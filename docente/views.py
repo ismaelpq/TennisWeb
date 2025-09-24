@@ -1,30 +1,49 @@
 from django.shortcuts import render
-from .models import Ejercicio
 from django.db.models import Q
+from .models import Ejercicio, Subtema
+from .forms import BusquedaEjercicioForm
 
 # Create your views here.
 def docente(request):
     return render(request, 'docente/homeDocente.html')
 
-def ejercicios(request):
-    return render(request, 'docente/ejercicios.html')
-
-
 
 def ejercicios(request):
-    query = request.GET.get("q")  # lo que escribe el usuario en el buscador
-    ejercicios = Ejercicio.objects.all()  # traemos todos por defecto
+    form = BusquedaEjercicioForm(request.GET or None)
 
-    if query:
+    ejercicios = Ejercicio.objects.all()
+
+    if form.is_valid():
+        tema = form.cleaned_data["tema"]
+        subtema1 = form.cleaned_data["subtema1"]
+        subtema2 = form.cleaned_data["subtema2"]
+        momento = form.cleaned_data["momento"]
+        nivel = form.cleaned_data["nivel"]
+        num_alumnos = request.GET.get('num_alumnos')
+
+        # 🔎 Filtrado obligatorio
         ejercicios = ejercicios.filter(
-            Q(nombre__icontains=query) |                   # nombre coloquial
-            Q(momento__icontains=query) |                  # momento del ejercicio
-            Q(tema__nombre__icontains=query) |             # tema (por nombre)
-            Q(subtema1__nombre__icontains=query) |         # subtema1
-            Q(subtema2__nombre__icontains=query) |         # subtema2
-            Q(nivel__icontains=query)                      # nivel de jugadores
-        ).distinct()  # evita duplicados si coincide en varios campos
+            tema=tema,
+            momento=momento,
+            nivel__icontains=nivel,  # ✅ clave para MultiSelectField
+        )
 
-    return render(request, "docente/ejercicios.html", {"ejercicios": ejercicios})
-   
+        # 🔎 Filtrado opcional
+        if subtema1:
+            ejercicios = ejercicios.filter(subtema1=subtema1)
+        if subtema2:
+            ejercicios = ejercicios.filter(subtema2=subtema2)
+        if num_alumnos:
+            try:
+                num_alumnos = int(num_alumnos)
+                ejercicios = ejercicios.filter(
+                    num_alumnos_min__lte=num_alumnos,
+                    num_alumnos_max__gte=num_alumnos
+                )
+            except ValueError:
+                pass
 
+    return render(request, "docente/ejercicios.html", {
+        "form": form,
+        "ejercicios": ejercicios
+    })

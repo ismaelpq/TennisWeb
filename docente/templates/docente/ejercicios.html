@@ -4,15 +4,17 @@
 
 {% block content %}
 
-<!-- 🔎 Formulario de búsqueda -->
-<form method="get" action="{% url 'ejercicios' %}" class="mb-3">
-    <input type="text" name="q" class="form-control" 
-           placeholder="Buscar ejercicio..." 
-           value="{{ request.GET.q }}">
-    <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+<!-- Formulario de búsqueda -->
+
+
+<form method="get" class="mb-4">
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Buscar</button>
+    <a href="{% url 'ejercicios' %}" class="btn btn-secondary">Volver al listado</a>
 </form>
 
-<!-- 📋 Lista de ejercicios -->
+
+<!-- Lista de ejercicios -->
 <ul class="list-group">
     {% for ejercicio in ejercicios %}
     <li class="list-group-item">
@@ -24,12 +26,18 @@
         <p>
             <b>Momento:</b> {{ ejercicio.momento }} |
             <b>Nivel:</b> {{ ejercicio.nivel }} |
-            <b>Alumnos:</b> {{ ejercicio.num_alumnos }}
+            <b>Alumnos:</b>
+            {% if ejercicio.num_alumnos_max %}
+                {{ ejercicio.num_alumnos_min }} - {{ ejercicio.num_alumnos_max }}
+            {% else %}
+                {{ ejercicio.num_alumnos_min }}
+            {% endif %}
+
         </p>
         <p>
             <b>Duración:</b> {{ ejercicio.duracion }} min |
             
-            <!-- 🔹 Dificultad interactiva -->
+            <!-- Dificultad interactiva -->
             <b>Dificultad:</b>
             <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" 
                     title="{{ ejercicio.dificultad_minus }}">

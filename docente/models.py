@@ -64,7 +64,9 @@ class Ejercicio(models.Model):
 
     #Numero de jugadores recomendados ¿PUEDE SER UN RANGO?
     #??
-    num_alumnos = models.IntegerField(default=1)
+    num_alumnos_min = models.IntegerField(default=1, help_text="Número mínimo de alumnos")
+    num_alumnos_max = models.IntegerField(blank=True, null=True, help_text="Número máximo de alumnos (opcional)")
+
 
     #Desplegable con los niveles predefinidos
     nivel = MultiSelectField(choices=NIVEL_CHOICES, max_choices=3, max_length=50)
