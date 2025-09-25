@@ -4,14 +4,29 @@
 
 {% block content %}
 
-<!-- Formulario de búsqueda -->
+<!-- Formulario de busqueda -->
 
 
-<form method="get" class="mb-4">
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Buscar</button>
-    <a href="{% url 'ejercicios' %}" class="btn btn-secondary">Volver al listado</a>
+<!--Buscador simple -->
+<form method="get" class="mb-3">
+    {{ simple_form.as_p }}
+    <button type="submit" class="btn btn-primary">Buscar simple</button>
 </form>
+
+<!-- Boton que despliega buscador avanzado -->
+<button class="btn btn-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#advancedSearch">
+    Búsqueda avanzada
+</button>
+
+<!--Buscador avanzado (oculto al inicio) -->
+<div class="collapse" id="advancedSearch">
+    <form method="get" class="mb-4">
+        {{ advanced_form.as_p }}
+        <button type="submit" class="btn btn-success">Buscar avanzado</button>
+        <a href="{% url 'ejercicios' %}" class="btn btn-outline-secondary">Limpiar</a>
+    </form>
+</div>
+
 
 
 <!-- Lista de ejercicios -->

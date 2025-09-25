@@ -1,6 +1,19 @@
+
 from django import forms
 from .models import Tema, Subtema, Ejercicio
 
+
+
+#Buscador de ejercicios simple que sale al principio
+class BusquedaSimpleForm(forms.Form):
+    query = forms.CharField(
+        required=False,
+        label="Buscar tema",
+        widget=forms.TextInput(attrs={"placeholder": "Ej: derecha, revés"})
+    )
+
+
+#Buscador d eejrcicicios elaborado 
 class BusquedaEjercicioForm(forms.Form):
     tema = forms.ModelChoiceField(
         queryset=Tema.objects.all(),
@@ -30,6 +43,11 @@ class BusquedaEjercicioForm(forms.Form):
     num_alumnos = forms.IntegerField(
         required=True,
         label="Número de alumnos (ej: 4)"
+    )
+
+    sin_raqueta = forms.BooleanField(
+        required=False,
+        label="Solo ejercicios sin raqueta"
     )
 
     def __init__(self, *args, **kwargs):

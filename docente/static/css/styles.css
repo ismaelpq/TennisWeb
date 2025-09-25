@@ -10824,3 +10824,9 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+
+/* Mostrar el dropdown al pasar el ratón */
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0; /* evita que se desplace raro */
+}

@@ -91,5 +91,8 @@ class Ejercicio(models.Model):
     #enlace de video o referencia externa
     link = models.URLField(blank=True, null=True)
 
+    #Sin Raqueta (Aparecera como TRUE), ejericicios donde no es necesario usar la raqueta
+    SinRaqueta = models.BooleanField(default=False, verbose_name="¿Se puede hacer sin raqueta?")
+
     def __str__(self):
         return self.nombre

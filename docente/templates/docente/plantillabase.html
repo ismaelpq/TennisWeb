@@ -16,22 +16,66 @@
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
     </head>
     <body>
-        <!-- Responsive navbar-->
+        
+        <!-- Barra de navegacion (arriba derecha) -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container px-5">
-                <a class="navbar-brand" href="#!">{% block headline %} Portal para docentes {% endblock %}</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <a class="navbar-brand">{% block headline %} Portal para docentes {% endblock %}</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
                 <!-- Boton plegable -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Pagina de inicio</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">Información</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">Services</a></li>
+
+                        <!-- Inicio normal -->
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{% url 'homeDocente' %}">Inicio Docente</a>
+                        </li>
+
+                        <!-- Ejercicios con desplegable -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#!" id="navbarDropdownEjercicios" 
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Ejercicios
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownEjercicios">
+                                <li><a class="dropdown-item" href="{% url 'ejercicios' %}">Buscador de ejercicios</a></li>
+                                <li><a class="dropdown-item" href="{% url 'infoEjercicios' %}">Información</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Estructuras con desplegable -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#!" id="navbarDropdownEjercicios" 
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Estructuras
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownEjercicios">
+                                <li><a class="dropdown-item" href="{% url 'estructuras' %}">Buscador de Estructuras</a></li>
+                                <li><a class="dropdown-item" href="{% url 'estructurasInfo' %}">Información</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Estructura de clases con desplegable -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#!" id="navbarDropdownServicios" 
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Generador de Clases
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownServicios">
+                                <li><a class="dropdown-item" href="{% url 'generadorClases' %}">Generador</a></li>
+                                <li><a class="dropdown-item" href="{% url 'generadorClasesInfo' %}">Información</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
+
         <!-- Page Content-->
         <div class="container px-4 px-lg-5">
             {% block content %}{% endblock %}
