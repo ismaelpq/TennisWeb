@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    #Para subir directamente de excel los ejercicios
+    'import_export',
+
     #A partir de aquí mis APPS.
     'core', 
     'alumno',

@@ -23,8 +23,10 @@ class Ejercicio(models.Model):
 
     MOMENTO_CHOICES = [
         ('calentamiento', 'Calentamiento'),
+        ('saque', 'Saque'),
         ('carro', 'Ejercicio Base - Carro'),
         ('juego', 'Ejercicio Base - Juego'),
+        ('secundaria', 'Pista secundaria'),
         ('final', 'Juego Final'),
     ]
 
@@ -92,7 +94,7 @@ class Ejercicio(models.Model):
     link = models.URLField(blank=True, null=True)
 
     #Sin Raqueta (Aparecera como TRUE), ejericicios donde no es necesario usar la raqueta
-    SinRaqueta = models.BooleanField(default=False, verbose_name="¿Se puede hacer sin raqueta?")
+    sin_raqueta = models.BooleanField(default=False, verbose_name="¿Se puede hacer sin raqueta?")
 
     def __str__(self):
         return self.nombre
