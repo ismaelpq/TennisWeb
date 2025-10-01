@@ -1,6 +1,7 @@
 from django.db import models
 from multiselectfield import MultiSelectField #permite que haya varios grupos en una variable
 
+#Temas y subtemas tienen un orden jerarquico
 
 class Tema(models.Model):
     nombre = models.CharField(max_length=100)
@@ -8,12 +9,29 @@ class Tema(models.Model):
     def __str__(self):
         return self.nombre
 
-class Subtema(models.Model):
-    tema = models.ForeignKey(Tema, on_delete=models.CASCADE, related_name="subtemas", blank=True, null=True)
+class Subtema1(models.Model):
+    tema = models.ForeignKey(
+        Tema, 
+        on_delete=models.CASCADE, 
+        related_name="subtemas1"
+    )
     nombre = models.CharField(max_length=100)
 
     def __str__(self):
         return f"{self.tema} - {self.nombre}"
+
+class Subtema2(models.Model):
+    subtema1 = models.ForeignKey(
+        Subtema1, 
+        on_delete=models.CASCADE, 
+        related_name="subtemas2"
+    )
+    nombre = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.subtema1} - {self.nombre}"
+
+
 
 
 
@@ -50,12 +68,8 @@ class Ejercicio(models.Model):
 
     #??
     tema = models.ForeignKey(Tema, on_delete=models.SET_NULL, null=True)
-    
-    #??
-    subtema1 = models.ForeignKey(Subtema, on_delete=models.SET_NULL, null=True, related_name="ejercicios_sub1")
-    
-    #??
-    subtema2 = models.ForeignKey(Subtema, on_delete=models.SET_NULL, null=True, related_name="ejercicios_sub2")
+    subtema1 = models.ForeignKey(Subtema1, on_delete=models.SET_NULL, null=True)
+    subtema2 = models.ForeignKey(Subtema2, on_delete=models.SET_NULL, null=True)
 
 
     #texto largo explicando el ejercicio
@@ -63,6 +77,10 @@ class Ejercicio(models.Model):
 
     #texto largo, notas para el profesor- Puede estar vacio gracias a blank=True y null=True
     notas_pedagogicas = models.TextField(blank=True, null=True)
+
+    #palabras clave que trabaja el ejericicio (pueden ser cosas de técnica o...)
+    etiquetas = models.TextField(blank=True, null=True)
+
 
     #Numero de jugadores recomendados ¿PUEDE SER UN RANGO?
     #??
@@ -95,6 +113,10 @@ class Ejercicio(models.Model):
 
     #Sin Raqueta (Aparecera como TRUE), ejericicios donde no es necesario usar la raqueta
     sin_raqueta = models.BooleanField(default=False, verbose_name="¿Se puede hacer sin raqueta?")
+
+
+   
+
 
     def __str__(self):
         return self.nombre

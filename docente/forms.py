@@ -1,10 +1,8 @@
-
 from django import forms
-from .models import Tema, Subtema, Ejercicio
+from .models import Tema, Ejercicio, Subtema1, Subtema2
 
 
-
-#Buscador de ejercicios simple que sale al principio
+# Buscador simple
 class BusquedaSimpleForm(forms.Form):
     query = forms.CharField(
         required=False,
@@ -13,7 +11,7 @@ class BusquedaSimpleForm(forms.Form):
     )
 
 
-#Buscador d eejrcicicios elaborado 
+# Buscador avanzado
 class BusquedaEjercicioForm(forms.Form):
     tema = forms.ModelChoiceField(
         queryset=Tema.objects.all(),
@@ -21,12 +19,12 @@ class BusquedaEjercicioForm(forms.Form):
         label="Tema"
     )
     subtema1 = forms.ModelChoiceField(
-        queryset=Subtema.objects.none(),
+        queryset=Subtema1.objects.none(),
         required=False,
         label="Subtema 1"
     )
     subtema2 = forms.ModelChoiceField(
-        queryset=Subtema.objects.none(),
+        queryset=Subtema2.objects.none(),
         required=False,
         label="Subtema 2"
     )
@@ -44,17 +42,20 @@ class BusquedaEjercicioForm(forms.Form):
         required=True,
         label="Número de alumnos (ej: 4)"
     )
-
     sin_raqueta = forms.BooleanField(
         required=False,
         label="Solo ejercicios sin raqueta"
     )
 
     def __init__(self, *args, **kwargs):
+        # Recibir tema y subtema1 seleccionados para filtrar
         tema_id = kwargs.pop("tema_id", None)
+        subtema1_id = kwargs.pop("subtema1_id", None)
         super().__init__(*args, **kwargs)
 
-        # Si ya hay un tema elegido, filtra los subtemas
         if tema_id:
-            self.fields["subtema1"].queryset = Subtema.objects.filter(tema_id=tema_id)
-            self.fields["subtema2"].queryset = Subtema.objects.filter(tema_id=tema_id)
+            # Filtrar subtema1 según tema
+            self.fields["subtema1"].queryset = Subtema1.objects.filter(tema_id=tema_id)
+        if subtema1_id:
+            # Filtrar subtema2 según subtema1
+            self.fields["subtema2"].queryset = Subtema2.objects.filter(subtema1_id=subtema1_id)

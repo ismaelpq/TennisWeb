@@ -1,5 +1,7 @@
 {% extends "docente/plantillabase.html" %}
 
+{% load form_tags %}
+
 {% block headline %} Ejercicios {% endblock %}
 
 {% block content %}
@@ -7,25 +9,38 @@
 <!-- Formulario de busqueda -->
 
 
-<!--Buscador simple -->
-<form method="get" class="mb-3">
-    {{ simple_form.as_p }}
-    <button type="submit" class="btn btn-primary">Buscar simple</button>
+<!-- Buscador simple -->
+<form method="get" class="mb-4 row g-3">
+    <div class="col-md-8">
+        {{ simple_form.query.label_tag }}
+        {{ simple_form.query|add_class:"form-control" }}
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+    </div>
 </form>
 
-<!-- Boton que despliega buscador avanzado -->
+<!-- Botón que despliega buscador avanzado -->
 <button class="btn btn-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#advancedSearch">
     Búsqueda avanzada
 </button>
 
-<!--Buscador avanzado (oculto al inicio) -->
+<!-- Buscador avanzado (oculto al inicio) -->
 <div class="collapse" id="advancedSearch">
-    <form method="get" class="mb-4">
-        {{ advanced_form.as_p }}
-        <button type="submit" class="btn btn-success">Buscar avanzado</button>
-        <a href="{% url 'ejercicios' %}" class="btn btn-outline-secondary">Limpiar</a>
+    <form method="get" class="mb-4 row g-3">
+        {% for field in advanced_form %}
+            <div class="col-md-4">
+                {{ field.label_tag }}
+                {{ field|add_class:"form-control" }}
+            </div>
+        {% endfor %}
+        <div class="col-12 d-flex gap-2 mt-2">
+            <button type="submit" class="btn btn-success">Buscar avanzado</button>
+            <a href="{% url 'ejercicios' %}" class="btn btn-outline-secondary">Limpiar</a>
+        </div>
     </form>
 </div>
+
 
 
 
@@ -34,10 +49,12 @@
     {% for ejercicio in ejercicios %}
     <li class="list-group-item">
         <h5>{{ ejercicio.nombre }}</h5>
+
         <p>
             <b>Tema:</b> {{ ejercicio.tema }} |
             <b>Subtema:</b> {{ ejercicio.subtema1 }} / {{ ejercicio.subtema2 }}
         </p>
+
         <p>
             <b>Momento:</b> {{ ejercicio.momento }} |
             <b>Nivel:</b> {{ ejercicio.nivel }} |
@@ -47,34 +64,103 @@
             {% else %}
                 {{ ejercicio.num_alumnos_min }}
             {% endif %}
+        </p>
 
-        </p>
         <p>
-            <b>Duración:</b> {{ ejercicio.duracion }} min |
-            
-            <!-- Dificultad interactiva -->
-            <b>Dificultad:</b>
-            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" 
-                    title="{{ ejercicio.dificultad_minus }}">
-                -
-            </button>
-            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="top" 
-                    title="{{ ejercicio.dificultad_plus }}">
-                +
-            </button>
+            <b>Duración:</b> {{ ejercicio.duracion }} min
         </p>
+
+        <!-- Etiquetas -->
+        {% if ejercicio.etiquetas.all %}
+            <p>
+                <b>Etiquetas:</b>
+                {% for et in ejercicio.etiquetas.all %}
+                    <span class="badge bg-primary">{{ et.nombre }}</span>
+                {% endfor %}
+            </p>
+        {% endif %}
+
+        <!-- Botones interactivos -->
+        <div class="mb-2">
+            {% if ejercicio.notas_pedagogicas %}
+            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#notasModal{{ ejercicio.id }}">
+                Notas pedagógicas
+            </button>
+            {% endif %}
+
+            {% if ejercicio.dificultad_min %}
+            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#difMinModal{{ ejercicio.id }}">
+                - Dificultad
+            </button>
+            {% endif %}
+
+            {% if ejercicio.dificultad_max %}
+            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#difMaxModal{{ ejercicio.id }}">
+                + Dificultad
+            </button>
+            {% endif %}
+        </div>
+
         <p>{{ ejercicio.descripcion }}</p>
 
         {% if ejercicio.imagen %}
-            <img src="{{ ejercicio.imagen.url }}" alt="imagen ejercicio" style="max-width:200px;">
+            <img src="{{ ejercicio.imagen.url }}" alt="imagen ejercicio" class="img-fluid rounded shadow-sm" style="max-width:200px;">
         {% endif %}
 
         {% if ejercicio.link %}
-            <a href="{{ ejercicio.link }}" target="_blank">Ver más</a>
+            <p><a href="{{ ejercicio.link }}" target="_blank" class="btn btn-outline-info btn-sm">Ver más</a></p>
         {% endif %}
     </li>
+
+    <!-- MODALES -->
+    {% if ejercicio.notas_pedagogicas %}
+    <div class="modal fade" id="notasModal{{ ejercicio.id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Notas pedagógicas - {{ ejercicio.nombre }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    {{ ejercicio.notas_pedagogicas|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if ejercicio.dificultad_min %}
+    <div class="modal fade" id="difMinModal{{ ejercicio.id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Cómo hacerlo más fácil - {{ ejercicio.nombre }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    {{ ejercicio.dificultad_min|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if ejercicio.dificultad_max %}
+    <div class="modal fade" id="difMaxModal{{ ejercicio.id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Cómo hacerlo más difícil - {{ ejercicio.nombre }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    {{ ejercicio.dificultad_max|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {% endfor %}
-
 </ul>
-
 {% endblock %}

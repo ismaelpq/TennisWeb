@@ -1,20 +1,32 @@
 from django.shortcuts import render
 from django.db.models import Q
-from .models import Ejercicio, Subtema
+from .models import Ejercicio, Tema, Subtema1, Subtema2
 from .forms import BusquedaEjercicioForm, BusquedaSimpleForm
 
-# Create your views here.
+
+# -------------------------
+# Home Docente
+# -------------------------
 def docente(request):
     return render(request, 'docente/homeDocente.html')
 
 
-#Views de apartado Ejercicio ----------------------------------------------------------------------------
-
-
+# -------------------------
+# Ejercicios
+# -------------------------
 def ejercicios(request):
+    # Tomar GET parameters para pasar al form
+    tema_id = request.GET.get("advanced-tema")
+    subtema1_id = request.GET.get("advanced-subtema1")
+
     # Formularios
     simple_form = BusquedaSimpleForm(request.GET or None, prefix="simple")
-    advanced_form = BusquedaEjercicioForm(request.GET or None, prefix="advanced")
+    advanced_form = BusquedaEjercicioForm(
+        request.GET or None, 
+        prefix="advanced",
+        tema_id=tema_id,
+        subtema1_id=subtema1_id
+    )
 
     # Query inicial
     ejercicios = Ejercicio.objects.all()
@@ -25,21 +37,20 @@ def ejercicios(request):
         ejercicios = ejercicios.filter(
             Q(tema__nombre__icontains=q) |
             Q(subtema1__nombre__icontains=q) |
-            Q(subtema2__nombre__icontains=q)
-        )
+            Q(subtema2__nombre__icontains=q) |
+            Q(etiquetas__icontains=q)  # corregido, etiquetas es TextField
+        ).distinct()
 
     # --- FILTRO AVANZADO ---
     elif advanced_form.is_valid():
-        # Obtener campos del formulario avanzado
         tema = advanced_form.cleaned_data.get("tema")
         subtema1 = advanced_form.cleaned_data.get("subtema1")
         subtema2 = advanced_form.cleaned_data.get("subtema2")
         momento = advanced_form.cleaned_data.get("momento")
         nivel = advanced_form.cleaned_data.get("nivel")
         sin_raqueta = advanced_form.cleaned_data.get("sin_raqueta")
-        num_alumnos = advanced_form.cleaned_data.get("num_alumnos")  # asegúrate que tu form tenga este campo
+        num_alumnos = advanced_form.cleaned_data.get("num_alumnos")
 
-        # Filtrar según campos no nulos
         if tema:
             ejercicios = ejercicios.filter(tema=tema)
         if subtema1:
@@ -49,7 +60,6 @@ def ejercicios(request):
         if momento:
             ejercicios = ejercicios.filter(momento=momento)
         if nivel:
-            # MultiSelectField requiere un filtro distinto
             ejercicios = ejercicios.filter(nivel__contains=nivel)
         if num_alumnos:
             try:
@@ -61,7 +71,7 @@ def ejercicios(request):
             except ValueError:
                 pass
         if sin_raqueta:
-            ejercicios = ejercicios.filter(sinRaqueta=True)
+            ejercicios = ejercicios.filter(sin_raqueta=True)
 
     return render(request, "docente/ejercicios.html", {
         "simple_form": simple_form,
@@ -70,11 +80,14 @@ def ejercicios(request):
     })
 
 
+
 def ejerciciosInfo(request):
     return render(request, 'docente/infoEjercicios.html')
 
-# Views sobre estructuras de clases ------------------------------------------------------------------------
 
+# -------------------------
+# Estructuras
+# -------------------------
 def estructuras(request):
     return render(request, 'docente/estructuras.html')
 
@@ -83,14 +96,12 @@ def estructurasInfo(request):
     return render(request, 'docente/infoEstructuras.html')
 
 
-
-# Views sobre el generador de clases ------------------------------------------------------------------------
-
+# -------------------------
+# Generador de Clases
+# -------------------------
 def generadorClases(request):
     return render(request, 'docente/generadorClases.html')
 
 
 def generadorClasesInfo(request):
     return render(request, 'docente/infoGenerador.html')
-
-
